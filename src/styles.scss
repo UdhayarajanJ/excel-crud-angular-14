@@ -1,1 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap');
+@import 'scss/app';
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;
+}
+
+body{
+    background-color: $background-pannel !important;
+}
+
+//Toaster Styles
+
+#toast-container>.toast-success,
+.toast-error {
+    background-image: none !important;
+}
+
+.ngx-toastr {
+    width: 25rem !important;
+}
