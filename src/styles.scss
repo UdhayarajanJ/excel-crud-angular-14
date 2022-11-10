@@ -3,14 +3,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap');
 @import 'scss/app';
 
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Lato', sans-serif;
 }
 
-body{
+body {
     background-color: $background-pannel !important;
 }
 
@@ -23,4 +23,18 @@ body{
 
 .ngx-toastr {
     width: 25rem !important;
+}
+
+
+
+//Validation Error For Input
+
+.error-indication {
+    border: 1px solid red !important;
+}
+
+.error-message {
+    color: red;
+    font-weight: bold;
+    font-size: .7rem;
 }
