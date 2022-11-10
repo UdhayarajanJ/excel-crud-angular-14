@@ -1,8 +1,8 @@
-import { ThisReceiver } from '@angular/compiler';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { ExcelService } from './core/services/excel.service';
 import { LoggerService } from './core/services/logger.service';
 
 @Component({
@@ -10,8 +10,7 @@ import { LoggerService } from './core/services/logger.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit
-{
+export class AppComponent implements OnInit {
 
   //Declare Template Reference Variable
   @ViewChild('openModalPopup') openModalPopup!: ElementRef;
@@ -22,50 +21,49 @@ export class AppComponent implements OnInit
   @ViewChild('optionCheckedCreateFile') optionCheckedCreateFile!: ElementRef;
   @ViewChild('optionCheckedUploadFile') optionCheckedUploadFile!: ElementRef;
 
+  //Declare File Selection Variable
+  selectedFile!: File;
+
   createFileFormGroup!: FormGroup;
   isCreateFileFormIsSubmitted: boolean = false;
   constructor(
     private spinner: NgxSpinnerService,
     private logger: LoggerService,
     private toaster: ToastrService,
-    private fb: FormBuilder
-  )
-  {
+    private fb: FormBuilder,
+    private excel: ExcelService
+  ) {
 
   }
 
-  ngOnInit(): void
-  {
+  ngOnInit(): void {
     this.logger.logInformation('CheckLogger', 'Angular 14 Excel Crud');
     this.defaultLoadForm();
     //this.toaster.success('Success','Message');
   }
 
   //Option Changes Then Shown Modal Popup
-  optionsChecked(e: any)
-  {
-    if (e.target.value == 1)
-    {
+  optionsChecked(e: any) {
+    if (e.target.value == 1) {
       this.openModalPopup.nativeElement.setAttribute('data-bs-target', '#btn_Download_File_Popup');
       this.openModalPopup.nativeElement.click();
     }
-    else
-    {
+    else {
       this.openModalPopup.nativeElement.setAttribute('data-bs-target', '#btn_Upload_File_Popup');
       this.openModalPopup.nativeElement.click();
     }
   }
 
   //Close Popup To Unchecked The Option
-  popupCancelSelection()
-  {
+  popupCancelSelection() {
     this.optionCheckedCreateFile.nativeElement.checked = false;
     this.optionCheckedUploadFile.nativeElement.checked = false;
+    this.defaultLoadForm();
+    this.isCreateFileFormIsSubmitted = false;
   }
 
   //Form Loading 
-  defaultLoadForm()
-  {
+  defaultLoadForm() {
     this.createFileFormGroup = this.fb.group({
       excelTitle: ['', [Validators.required]],
       sheetName: ['', [Validators.required]],
@@ -74,21 +72,38 @@ export class AppComponent implements OnInit
   }
 
   //Get Form Errors 
-  get f()
-  {
+  get f() {
     return this.createFileFormGroup.controls;
   }
 
   //Create File On Submit
-  onSubmitCreateFile()
-  {
+  onSubmitCreateFile() {
     this.logger.logInformation('Submit Check', 'Submit Working Fine');
     this.isCreateFileFormIsSubmitted = true;
     if (this.createFileFormGroup.invalid)
       return;
-    else
-    {
+    else {
+      this.spinner.show();
+      this.excel.createNewExcelFile(this.createFileFormGroup.value);
+      this.closeCreateFilePopup.nativeElement.click();
+      this.toaster.success('File Created Successfully...', 'Message');
+      this.spinner.hide();
       this.logger.logInformation('Form Value', this.createFileFormGroup.value);
+    }
+  }
+
+
+  //onChange File
+  onChange(e: any) {
+    this.selectedFile = e.target.files[0];
+    const extension = this.selectedFile.name.substring(this.selectedFile.name.lastIndexOf('.') + 1, this.selectedFile.name.length);
+    this.logger.logInformation('checkExtension', extension);
+    if (extension == 'xlsx') {
+      this.excel.loadUploadedFile(this.selectedFile);
+    }
+    else {
+
+      this.toaster.error('Invalid File Format...', 'Message');
     }
   }
 }
