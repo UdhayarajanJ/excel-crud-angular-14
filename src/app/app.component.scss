@@ -9,28 +9,52 @@
     border-radius: .4rem;
 }
 
-.footer{
+.footer {
     text-align: center;
     width: 100%;
     position: fixed;
     bottom: 0;
-    h4{
+    padding: .5rem;
+
+    h4 {
         font-size: .7rem;
     }
 }
 
-.main{
+.main {
     box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     background-color: $primary-font-color;
     border-radius: .4rem;
 }
 
-.primary-app-button{
+.primary-app-button {
     @include button-app($primary-color-light, $primary-font-color, .9rem, bold);
+
 }
 
-.modal-header{
+.modal-header {
     background-color: $primary-color-dark;
     color: $primary-font-color;
 }
 
+.download-animation {
+    animation-name: downloadkeyframes;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+
+
+@keyframes downloadkeyframes {
+    0% {
+        background: white;
+    }
+
+    50% {
+        background: $primary-color-light;
+    }
+
+    100% {
+        background: grey;
+    }
+}
