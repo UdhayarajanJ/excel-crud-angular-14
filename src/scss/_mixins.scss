@@ -1,0 +1,13 @@
+
+@mixin button-app($backColor, $fontColor, $fontSize, $fontWeight) {
+    background-color: $backColor;
+    color: $fontColor;
+    font-weight: $fontWeight;
+    font-size: $fontSize;
+    padding:.3rem  1rem;
+
+    &:hover{
+        background-color: grey;
+        color: white;
+    }
+}

@@ -1,0 +1,118 @@
+<div class="container-fluid">
+  <div class="header">
+    <h4>Excel CRUD In Angular 14</h4>
+  </div>
+
+  <div class="main h-100 d-flex flex-md-row flex-column justify-content-between align-items-center mt-2">
+    <div class="option-view d-flex p-3">
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="excelOption" #optionCheckedCreateFile [value]="1"
+          (change)="optionsChecked($event)">
+        <label class="form-check-label" for="flexRadioDefault1">
+          Create Excel File
+        </label>
+      </div>
+      <div class="form-check mx-5">
+        <input class="form-check-input optionChecked" type="radio" #optionCheckedUploadFile name="excelOption"
+          [value]="2" (change)="optionsChecked($event)">
+        <label class="form-check-label" for="flexRadioDefault2">
+          Upload Excel File
+        </label>
+      </div>
+    </div>
+    <div class="action-buttons p-md-0 p-4">
+      <button type="button" class="btn primary-app-button btn-sm mx-3"><i class="fa fa-plus mx-1"
+          aria-hidden="true"></i>Add Record</button>
+      <button type="button" class="btn primary-app-button btn-sm mx-3"><i class="fa fa-save mx-1"
+          aria-hidden="true"></i>Save</button>
+      <button type="button" class="btn primary-app-button btn-sm mx-3 download-animation" [hidden]="true"><i
+          class="fa fa-download mx-1" aria-hidden="true"></i>Download</button>
+    </div>
+  </div>
+  <div class="footer">
+    <h4>These Angular 14 Project Only Created For Learning Purpose @ 2022</h4>
+  </div>
+  <ngx-spinner type="square-jelly-box" size="medium">
+    <h3 class="text-center text-white">Loading ... </h3>
+  </ngx-spinner>
+</div>
+
+
+<!-- Modal Popup -->
+<button type="button" #openModalPopup data-bs-toggle="modal" [hidden]="true"></button>
+
+<!-- Modal Upload File Popup -->
+<div class="modal fade" id="btn_Upload_File_Popup" tabindex="-1" data-bs-backdrop="static"
+  aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="">Upload Excel File</h1>
+      </div>
+      <div class="modal-body">
+        <h6>Please Choose Your Correct Format File</h6>
+        <div class="input-group py-3">
+          <input type="file" class="form-control" aria-label="Sizing example input"
+            aria-describedby="inputGroup-sizing-default">
+        </div>
+      </div>
+      <div class="modal-footer d-flex justifiy-content-center align-items-center">
+        <button type="button" #closeUploadFilePopup class="btn btn-secondary btn-sm" (click)="popupCancelSelection()"
+          data-bs-dismiss="modal"><i class="fa fa-times-circle mx-1" aria-hidden="true"></i>
+          Close</button>
+        <button type="button" class="btn primary-app-button btn-sm"><i class="fa fa-upload mx-1"
+            aria-hidden="true"></i>Upload</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--  -->
+<!-- Modal Upload File Popup -->
+<div class="modal fade" id="btn_Download_File_Popup" tabindex="-1" data-bs-backdrop="static"
+  aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="">Create Excel File</h1>
+      </div>
+      <form [formGroup]="createFileFormGroup" (ngSubmit)="onSubmitCreateFile()">
+        <div class="modal-body">
+
+          <div class="">
+            <label for="Excel Title" class="form-label">Excel Title</label>
+            <input type="email" formControlName="excelTitle" class="form-control form-control-sm"
+              [ngClass]="f['excelTitle'].errors && isCreateFileFormIsSubmitted?'error-indication':''">
+          </div>
+          <div *ngIf="f['excelTitle'].errors && isCreateFileFormIsSubmitted">
+            <label *ngIf="f['excelTitle'].errors['required']" class="error-message">* Excel Title Is Required.</label>
+          </div>
+          <div class="">
+            <label for="Sheet Name" class="form-label">Sheet Name</label>
+            <input type="email" formControlName="sheetName" class="form-control form-control-sm"
+              [ngClass]="f['sheetName'].errors && isCreateFileFormIsSubmitted?'error-indication':''">
+          </div>
+          <div *ngIf="f['sheetName'].errors && isCreateFileFormIsSubmitted">
+            <label *ngIf="f['sheetName'].errors['required']" class="error-message">* Sheet Name Is Required.</label>
+          </div>
+          <div class="">
+            <label for="File Name" class="form-label">File Name</label>
+            <input type="email" formControlName="fileName" class="form-control form-control-sm"
+              [ngClass]="f['fileName'].errors && isCreateFileFormIsSubmitted?'error-indication':''">
+          </div>
+          <div *ngIf="f['fileName'].errors && isCreateFileFormIsSubmitted">
+            <label *ngIf="f['fileName'].errors['required']" class="error-message">* File Name Is Required.</label>
+          </div>
+        </div>
+        <div class="modal-footer d-flex justifiy-content-center align-items-center">
+          <button type="button" #closeCreateFilePopup class="btn btn-secondary btn-sm" data-bs-dismiss="modal"
+            (click)="popupCancelSelection()"><i class="fa fa-times-circle mx-1" aria-hidden="true"></i>
+            Close</button>
+          <button type="submit" class="btn primary-app-button btn-sm"><i class="fa fa-save mx-1"
+              aria-hidden="true"></i>Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
