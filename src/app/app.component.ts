@@ -21,6 +21,9 @@ export class AppComponent implements OnInit {
   @ViewChild('optionCheckedCreateFile') optionCheckedCreateFile!: ElementRef;
   @ViewChild('optionCheckedUploadFile') optionCheckedUploadFile!: ElementRef;
 
+  //Declare File Selection Variable
+  selectedFile!: File;
+
   createFileFormGroup!: FormGroup;
   isCreateFileFormIsSubmitted: boolean = false;
   constructor(
@@ -86,6 +89,21 @@ export class AppComponent implements OnInit {
       this.toaster.success('File Created Successfully...', 'Message');
       this.spinner.hide();
       this.logger.logInformation('Form Value', this.createFileFormGroup.value);
+    }
+  }
+
+
+  //onChange File
+  onChange(e: any) {
+    this.selectedFile = e.target.files[0];
+    const extension = this.selectedFile.name.substring(this.selectedFile.name.lastIndexOf('.') + 1, this.selectedFile.name.length);
+    this.logger.logInformation('checkExtension', extension);
+    if (extension == 'xlsx') {
+      this.excel.loadUploadedFile(this.selectedFile);
+    }
+    else {
+
+      this.toaster.error('Invalid File Format...', 'Message');
     }
   }
 }
