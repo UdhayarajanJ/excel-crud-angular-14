@@ -19,6 +19,8 @@
     "@angular/platform-browser-dynamic": "^14.0.0",
     "@angular/router": "^14.0.0",
     "bootstrap": "^5.2.2",
+    "exceljs": "^4.3.0",
+    "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",
     "ngx-spinner": "^14.0.0",
     "ngx-toastr": "^15.2.1",
