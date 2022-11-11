@@ -29,6 +29,42 @@
           class="fa fa-download mx-1" aria-hidden="true"></i>Download</button>
     </div>
   </div>
+  <div class="table-view mt-2 px-5 py-2" *ngIf="IEmployeeDetails && IsheetDetails">
+    <div class="w-100">
+      <div class="d-flex justify-content-between">
+        <h6>SheetName : <span>{{IsheetDetails.sheetName}}</span></h6>
+        <h6>Title Of Excel : <span>{{IsheetDetails.titleOfExcel}}</span></h6>
+        <h6>File Name : <span>{{IsheetDetails.fileName}}</span></h6>
+        <h6>Total Rows : <span>{{IsheetDetails.rowCount}}</span></h6>
+      </div>
+    </div>
+    <table class="table w-100 table-responsive">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">EmployeeName</th>
+          <th scope="col">EmployeeSalary</th>
+          <th scope="col">EmployeeJoininDate</th>
+          <th scope="col">EmployeeRole</th>
+          <th scope="col">EmployeeEmail</th>
+          <th scope="col">EmployeePhone</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody class="table-group-divider">
+        <tr *ngFor="let employeeInfo of IEmployeeDetails;let i=index">
+          <th scope="row">{{i+1}}</th>
+          <td>{{employeeInfo.employeeName}}</td>
+          <td>{{employeeInfo.employeeSalary}}</td>
+          <td>{{employeeInfo.employeeJoininDate | date:"yyyy-MM-dd"}}</td>
+          <td>{{employeeInfo.employeeRole}}</td>
+          <td>{{employeeInfo.employeeEmail}}</td>
+          <td>{{employeeInfo.employeePhone}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
   <div class="footer">
     <h4>These Angular 14 Project Only Created For Learning Purpose @ 2022</h4>
   </div>
@@ -52,13 +88,14 @@
       <div class="modal-body">
         <h6>Please Choose Your Correct Format File</h6>
         <div class="input-group py-3">
-          <input type="file" class="form-control form-control-sm" aria-label="Sizing example input"
+          <input type="file" #uploadFile class="form-control form-control-sm" aria-label="Sizing example input"
             aria-describedby="inputGroup-sizing-default" (change)="onChange($event)">
         </div>
       </div>
       <div class="modal-footer d-flex justifiy-content-center align-items-center">
-        <button type="button" #closeUploadFilePopup class="btn btn-secondary btn-sm" (click)="popupCancelSelection()"
-          data-bs-dismiss="modal"><i class="fa fa-times-circle mx-1" aria-hidden="true"></i>
+        <button type="button" #closeUploadFilePopup class="btn btn-secondary btn-sm"
+          (click)="uploadFile.value='';popupCancelSelection()" data-bs-dismiss="modal"><i
+            class="fa fa-times-circle mx-1" aria-hidden="true"></i>
           Close</button>
         <button type="button" class="btn primary-app-button btn-sm"><i class="fa fa-upload mx-1"
             aria-hidden="true"></i>Upload</button>

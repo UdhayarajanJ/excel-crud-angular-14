@@ -1,20 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Workbook, Worksheet } from 'exceljs';
 import * as fs from 'file-saver';
+import { Observable } from 'rxjs';
 import { Icompany } from '../interfaces/icompany';
+import { Isheetdetails } from '../interfaces/isheetdetails';
 import { LoggerService } from './logger.service';
 @Injectable({
   providedIn: 'root'
 })
-export class ExcelService {
+export class ExcelService
+{
 
   private IEmployeeDetails!: Icompany[];
+  private IEmployeeDetailsObj!: Icompany;
+  private IsheetDetails!: Isheetdetails;
 
   constructor(private logger: LoggerService) { }
 
   //Save Empty Content Excel
 
-  createNewExcelFile(data: any) {
+  public createNewExcelFile(data: any)
+  {
 
     let workbook = new Workbook();
 
@@ -31,14 +37,16 @@ export class ExcelService {
     let fileName = data.fileName;
 
     //to Save The File
-    workbook.xlsx.writeBuffer().then((data) => {
+    workbook.xlsx.writeBuffer().then((data) =>
+    {
       let blob = new Blob([data], { type: 'application/octet-stream' });
       fs.saveAs(blob, fileName + '.xlsx');
     });
   }
 
   //to define Title
-  private toDefineTitle(worksheet: Worksheet, title: string): Worksheet {
+  private toDefineTitle(worksheet: Worksheet, title: string): Worksheet
+  {
 
     worksheet.mergeCells('A2:F3');
     worksheet.getCell('A2').value = title;
@@ -66,12 +74,14 @@ export class ExcelService {
   }
 
   //to define FileName
-  private toDefineHeaders(worksheet: Worksheet): Worksheet {
+  private toDefineHeaders(worksheet: Worksheet): Worksheet
+  {
 
     const headers = ['EmployeeName', 'EmployeeSalary', 'EmployeeJoininDate', 'EmployeeRole', 'EmployeeEmail', 'EmployeePhone'];
     worksheet.insertRow(5, headers);
 
-    worksheet.getRow(5).eachCell((cell, colNumber) => {
+    worksheet.getRow(5).eachCell((cell, colNumber) =>
+    {
       cell.alignment = {
         horizontal: 'center',
         vertical: 'middle'
@@ -85,50 +95,52 @@ export class ExcelService {
 
       cell.style.font = {
         bold: true,
-        color: { argb: 'FFFFFF' },
+        color: { argb: '000000' },
         size: 12
       };
     });
 
-    worksheet.columns.forEach(function (column, i) {
+    worksheet.columns.forEach(function (column, i)
+    {
       column.width = 30
     });
 
     return worksheet;
   }
 
-  //load Uploaded File
-  loadUploadedFile(importFile: any) {
-    const workbook = new Workbook();
-    const arrayBuffer = new Response(importFile).arrayBuffer();
-    arrayBuffer.then((data) => {
-      workbook.xlsx.load(data).then((workbook) => {
-        if (this.validateUploadExcelTitle(workbook) && this.validateUploadExcelHeaders(workbook)) {
-          workbook.getWorksheet(1).eachRow({ includeEmpty: false }, (row, rowNumber) => {
-            if (rowNumber > 5) {
-              this.logger.logInformation('rowValue', row.values);
-              this.logger.logInformation('rowNumber', rowNumber);
-              this.IEmployeeDetails.push(row.values);
-            }
-          });
-        }
-        this.logger.logInformation('workbookDetails', workbook);
-        this.logger.logInformation('workSheetDetails', workbook.getWorksheet(1));
-        this.logger.logInformation('WorkSheetName', workbook.getWorksheet(1).name);
-        this.logger.logInformation('WorkSheetTitle', workbook.getWorksheet(1).getCell('A2:F3').value);
-        this.logger.logInformation('WorkHeaderRow', workbook.getWorksheet(1).getRow(5).values);
-      });
-    });
-  }
 
   //validate Title Name
-  private validateUploadExcelTitle(workbook: Workbook): boolean {
-    return workbook.getWorksheet(1).getCell('A2:F3').value ? true : false;
+  public validateUploadExcelTitle(workbook: Workbook): boolean
+  {
+    //this.logger.logInformation('TitileValue', workbook.getWorksheet(1).getCell('A2:F3').value);
+    let result = workbook.getWorksheet(1).getCell('A2:F3').value ? true : false;
+    return result;
   }
 
   //validate Header
-  private validateUploadExcelHeaders(workbook: Workbook): boolean {
-    const headers = ['EmployeeName', 'EmployeeSalary', 'EmployeeJoininDate', 'EmployeeRole', 'EmployeeEmail', 'EmployeePhone'];
-    return (workbook.getWorksheet(1).getRow(5).values === headers) ? true : false;
+  public validateUploadExcelHeaders(workbook: Workbook): boolean
+  {
+    let headers = new Array();
+    workbook.getWorksheet(1).getRow(5).eachCell({ includeEmpty: false }, (cell, cellNumber) =>
+    {
+      headers.push(cell.value);
+    });
+    //this.logger.logInformation('HeadersValue', headers);
+    const defaultHeader = ['EmployeeName', 'EmployeeSalary', 'EmployeeJoininDate', 'EmployeeRole', 'EmployeeEmail', 'EmployeePhone'];
+    let result = JSON.stringify(headers) === JSON.stringify(defaultHeader) ? true : false;
+    return result;
+  }
+
+
+  //To Get Sheet Details
+  public toGetSheetDetails(workbook: Workbook, fileInfo: File, rowCount: number): Isheetdetails 
+  {
+    this.IsheetDetails = {
+      fileName: fileInfo.name,
+      rowCount: rowCount,
+      sheetName: workbook.getWorksheet(1).name,
+      titleOfExcel: workbook.getWorksheet(1).getCell('A2:F3').value?.toString()
+    }
+    return this.IsheetDetails;
   }
 }
