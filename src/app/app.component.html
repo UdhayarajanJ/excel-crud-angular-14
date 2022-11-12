@@ -20,15 +20,63 @@
         </label>
       </div>
     </div>
-    <div class="action-buttons p-md-0 p-4">
-      <button type="button" class="btn primary-app-button btn-sm mx-3"><i class="fa fa-plus mx-1"
-          aria-hidden="true"></i>Add Record</button>
-      <button type="button" class="btn primary-app-button btn-sm mx-3"><i class="fa fa-save mx-1"
+    <div class="action-buttons p-md-0 p-4" *ngIf="showTableView">
+      <button type="button" class="btn primary-app-button btn-sm mx-3" data-bs-toggle="modal"
+        data-bs-target="#btn_Add_Edit_Record"><i class="fa fa-plus mx-1" aria-hidden="true"></i>Add Record</button>
+      <button type="button" data-bs-toggle="modal" data-bs-target="#btn_save_Excel_Popup"
+        class="btn primary-app-button btn-sm mx-3" [hidden]="!isChangedFileTrue"><i class="fa fa-save mx-1"
           aria-hidden="true"></i>Save</button>
-      <button type="button" class="btn primary-app-button btn-sm mx-3 download-animation" [hidden]="true"><i
-          class="fa fa-download mx-1" aria-hidden="true"></i>Download</button>
     </div>
   </div>
+  <div class="table-view mt-2 px-5 py-2" *ngIf="showTableView">
+    <div class="w-100">
+      <div class="d-flex flex-md-row flex-column justify-content-between">
+        <h6>SheetName : <span>{{IsheetDetails.sheetName}}</span></h6>
+        <h6>Title Of Excel : <span>{{IsheetDetails.titleOfExcel}}</span></h6>
+        <h6>File Name : <span>{{IsheetDetails.fileName}}</span></h6>
+        <h6>Total Rows : <span>{{IsheetDetails.rowCount}}</span></h6>
+      </div>
+    </div>
+    <div class="table-responsive py-3">
+      <table class="table table-sm w-100">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">EmployeeName</th>
+            <th scope="col">EmployeeSalary</th>
+            <th scope="col">EmployeeJoininDate</th>
+            <th scope="col">EmployeeRole</th>
+            <th scope="col">EmployeeEmail</th>
+            <th scope="col">EmployeePhone</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          <tr *ngFor="let employeeInfo of arrayCompany |  paginate:{itemsPerPage:pageSize,currentPage:pageNo,totalItems:IsheetDetails.rowCount} ;let i=index">
+            <th scope="row">{{pageSize*(pageNo-1)+i+1}}</th>
+            <td>{{employeeInfo.employeeName}}</td>
+            <td>{{employeeInfo.employeeSalary}}</td>
+            <td>{{employeeInfo.employeeJoininDate | date:"yyyy-MM-dd"}}</td>
+            <td>{{employeeInfo.employeeRole}}</td>
+            <td>{{employeeInfo.employeeEmail}}</td>
+            <td>{{employeeInfo.employeePhone}}</td>
+            <td>
+              <i class="fa fa-pencil-square px-2 text-primary" (click)="editRecord(employeeInfo,i)"
+                aria-hidden="true"></i>
+              <i class="fa fa-trash px-2 text-danger" data-bs-toggle="modal" data-bs-target="#btn_delete_record_Popup"
+                aria-hidden="true" (click)="indexNumber = i"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-center">
+      <pagination-controls (pageChange)="pageNo=$event" (click)="onPageChangeEvent(pageNo)" class="text-end"
+        previousLabel="Prev" nextLabel="Next" [responsive]="true">
+      </pagination-controls>
+    </div>
+  </div>
+
   <div class="footer">
     <h4>These Angular 14 Project Only Created For Learning Purpose @ 2022</h4>
   </div>
@@ -52,13 +100,14 @@
       <div class="modal-body">
         <h6>Please Choose Your Correct Format File</h6>
         <div class="input-group py-3">
-          <input type="file" class="form-control form-control-sm" aria-label="Sizing example input"
+          <input type="file" #uploadFile class="form-control form-control-sm" aria-label="Sizing example input"
             aria-describedby="inputGroup-sizing-default" (change)="onChange($event)">
         </div>
       </div>
       <div class="modal-footer d-flex justifiy-content-center align-items-center">
-        <button type="button" #closeUploadFilePopup class="btn btn-secondary btn-sm" (click)="popupCancelSelection()"
-          data-bs-dismiss="modal"><i class="fa fa-times-circle mx-1" aria-hidden="true"></i>
+        <button type="button" #closeUploadFilePopup class="btn btn-secondary btn-sm"
+          (click)="uploadFile.value='';popupCancelSelection()" data-bs-dismiss="modal"><i
+            class="fa fa-times-circle mx-1" aria-hidden="true"></i>
           Close</button>
         <button type="button" class="btn primary-app-button btn-sm"><i class="fa fa-upload mx-1"
             aria-hidden="true"></i>Upload</button>
@@ -113,6 +162,144 @@
               aria-hidden="true"></i>Save</button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal Add New Record And Edit Record -->
+<div class="modal fade" id="btn_Add_Edit_Record" tabindex="-1" data-bs-backdrop="static"
+  aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="">{{modalHeaderForAdd_Edit_Record}}</h1>
+      </div>
+      <form [formGroup]="addNewRecordForm" (ngSubmit)="onSubmitAddEditRecord()">
+        <div class="modal-body">
+          <div class="">
+            <label for="Excel Title" class="form-label">Name</label>
+            <input type="text" appOnlychar formControlName="employeeName" class="form-control form-control-sm"
+              [ngClass]="fAddEditForm['employeeName'].errors && isAddEditFormIsSubmitted?'error-indication':''">
+          </div>
+          <div *ngIf="fAddEditForm['employeeName'].errors && isAddEditFormIsSubmitted">
+            <label *ngIf="fAddEditForm['employeeName'].errors['required']" class="error-message">* Employee Name Is
+              Required.</label>
+          </div>
+          <div class="">
+            <label for="Sheet Name" class="form-label">Salary</label>
+            <input type="text" appOnlynumber formControlName="employeeSalary" class="form-control form-control-sm"
+              [ngClass]="fAddEditForm['employeeSalary'].errors && isAddEditFormIsSubmitted?'error-indication':''">
+          </div>
+          <div *ngIf="fAddEditForm['employeeSalary'].errors && isAddEditFormIsSubmitted">
+            <label *ngIf="fAddEditForm['employeeSalary'].errors['employeeSalary']" class="error-message">* Employee
+              Salary Is Required.</label>
+          </div>
+          <div class="">
+            <label for="File Name" class="form-label">Joining Date</label>
+            <input type="date" formControlName="employeeJoininDate" class="form-control form-control-sm"
+              [ngClass]="fAddEditForm['employeeJoininDate'].errors && isAddEditFormIsSubmitted?'error-indication':''">
+          </div>
+          <div *ngIf="fAddEditForm['employeeJoininDate'].errors && isAddEditFormIsSubmitted">
+            <label *ngIf="fAddEditForm['employeeJoininDate'].errors['required']" class="error-message">* Employee
+              Joining Date Is Required.</label>
+          </div>
+          <div class="">
+            <label for="File Name" class="form-label">Role</label>
+            <input type="text" appOnlychar formControlName="employeeRole" class="form-control form-control-sm"
+              [ngClass]="fAddEditForm['employeeRole'].errors && isAddEditFormIsSubmitted?'error-indication':''">
+          </div>
+          <div *ngIf="fAddEditForm['employeeRole'].errors && isAddEditFormIsSubmitted">
+            <label *ngIf="fAddEditForm['employeeRole'].errors['required']" class="error-message">* Employee Role Is
+              Required.</label>
+          </div>
+          <div class="">
+            <label for="File Name" class="form-label">Email</label>
+            <input type="text" formControlName="employeeEmail" class="form-control form-control-sm"
+              [ngClass]="fAddEditForm['employeeEmail'].errors && isAddEditFormIsSubmitted?'error-indication':''">
+          </div>
+          <div *ngIf="fAddEditForm['employeeEmail'].errors && isAddEditFormIsSubmitted">
+            <label *ngIf="fAddEditForm['employeeEmail'].errors['required']" class="error-message">* Employee Email Is
+              Required.</label>
+            <label *ngIf="fAddEditForm['employeeEmail'].errors['pattern']" class="error-message">* Invalid Email
+              Address.</label>
+          </div>
+          <div class="">
+            <label for="File Name" class="form-label">Mobile</label>
+            <input type="text" appOnlynumber [maxlength]="10" formControlName="employeePhone"
+              class="form-control form-control-sm"
+              [ngClass]="fAddEditForm['employeePhone'].errors && isAddEditFormIsSubmitted?'error-indication':''">
+          </div>
+          <div *ngIf="fAddEditForm['employeePhone'].errors && isAddEditFormIsSubmitted">
+            <label *ngIf="fAddEditForm['employeePhone'].errors['required']" class="error-message">* Employee Mobile
+              Number Is Required.</label>
+            <label *ngIf="fAddEditForm['employeePhone'].errors['pattern']" class="error-message">* Invalid Mobile
+              Number.</label>
+          </div>
+        </div>
+        <div class="modal-footer d-flex justifiy-content-center align-items-center">
+          <button type="button" #closeAddEditModalPopup (click)="clearFormData()" class="btn btn-secondary btn-sm"
+            data-bs-dismiss="modal"><i class="fa fa-times-circle mx-1" aria-hidden="true"></i>
+            Close</button>
+          <button type="submit" class="btn primary-app-button btn-sm"><i class="fa fa-save mx-1"
+              aria-hidden="true"></i>{{buttonForAdd_Edit_Record}}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal Popup Opened -->
+<div class="modal fade" id="btn_delete_record_Popup" tabindex="-1" data-bs-backdrop="static"
+  aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="">Delete Record</h1>
+      </div>
+      <div class="modal-body d-flex justify-content-center flex-column">
+        <h6 class="text-center">Are You Sure Delete ?</h6>
+        <i class="fa fa-trash px-2 text-danger text-center" data-bs-toggle="modal"></i>
+      </div>
+      <div class="modal-footer d-flex justifiy-content-center align-items-center">
+        <button type="button" #closeDeleteRecordPopup class="btn btn-secondary btn-sm"
+          (click)="uploadFile.value='';popupCancelSelection()" data-bs-dismiss="modal"><i
+            class="fa fa-times-circle mx-1" aria-hidden="true"></i>
+          Close</button>
+        <button type="button" class="btn primary-app-button btn-sm" (click)="deleteRecord()"><i
+            class="fa fa-check-circle-o mx-1" aria-hidden="true"></i>Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Save Modal Popup -->
+<div class="modal fade" id="btn_save_Excel_Popup" tabindex="-1" data-bs-backdrop="static"
+  aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="">Save Excel</h1>
+      </div>
+      <div class="modal-body">
+        <h6>Please Choose Your Correct Format File</h6>
+        <div class="input-group py-3">
+          <input type="text" #saveFileName class="form-control form-control-sm" aria-label="Sizing example input"
+            [ngClass]="invalidFileName?'error-indication':''">
+        </div>
+        <div *ngIf="invalidFileName">
+          <label *ngIf="invalidFileName" class="error-message">* File Name Is Required</label>
+        </div>
+      </div>
+      <div class="modal-footer d-flex justifiy-content-center align-items-center">
+        <button type="button" #closeSaveExcelPopup class="btn btn-secondary btn-sm"
+          (click)="uploadFile.value='';popupCancelSelection()" data-bs-dismiss="modal"><i
+            class="fa fa-times-circle mx-1" aria-hidden="true"></i>
+          Close</button>
+        <button type="button" class="btn primary-app-button btn-sm" (click)="saveExcelFile(saveFileName)"><i
+            class="fa fa-check-circle-o mx-1" aria-hidden="true"></i>Save</button>
+      </div>
     </div>
   </div>
 </div>
