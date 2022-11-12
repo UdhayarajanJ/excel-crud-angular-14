@@ -53,7 +53,7 @@ export class AppComponent implements OnInit {
 
   //Pagination Variable
   pageNo: number = 1;
-  pageSize: number = 3;
+  pageSize: number = 6;
   offsetValue: number = 0;
 
 
