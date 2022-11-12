@@ -98,8 +98,8 @@ export class AppComponent implements OnInit {
       employeeSalary: ['', [Validators.required]],
       employeeJoininDate: ['', [Validators.required]],
       employeeRole: ['', [Validators.required]],
-      employeeEmail: ['', [Validators.required]],
-      employeePhone: ['', [Validators.required]]
+      employeeEmail: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
+      employeePhone: ['', [Validators.required, Validators.pattern('^[6-9]{1}[0-9]{9}$')]]
     });
   }
 
@@ -263,8 +263,8 @@ export class AppComponent implements OnInit {
     this.closeSaveExcelPopup.nativeElement.click();
     this.excel.saveFile(this.IsheetDetails, fileName.value, this.IEmployeeDetails);
     this.toaster.success('New File Saved...', 'Message');
+    fileName.value = '';
     this.isChangedFileTrue = false;
     this.showTableView = false;
   }
-
 }

@@ -8,7 +8,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { AppComponent } from './app.component';
 import { ExcelService } from './core/services/excel.service';
 import { LoggerService } from './core/services/logger.service';
-
+import { SharedModule } from './shared/shared.module';
 @NgModule({
   declarations: [
     AppComponent
@@ -23,7 +23,7 @@ import { LoggerService } from './core/services/logger.service';
       progressBar: true,
       progressAnimation: 'increasing'
     }),
-
+    SharedModule,
   ],
   providers: [LoggerService, ExcelService],
   bootstrap: [AppComponent]

@@ -22,6 +22,7 @@
     "exceljs": "^4.3.0",
     "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",
+    "ng-pick-datetime": "^7.0.0",
     "ngx-spinner": "^14.0.0",
     "ngx-toastr": "^15.2.1",
     "rxjs": "~7.5.0",

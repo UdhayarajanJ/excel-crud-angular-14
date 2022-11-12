@@ -175,7 +175,7 @@
         <div class="modal-body">
           <div class="">
             <label for="Excel Title" class="form-label">Name</label>
-            <input type="email" formControlName="employeeName" class="form-control form-control-sm"
+            <input type="text" appOnlychar formControlName="employeeName" class="form-control form-control-sm"
               [ngClass]="fAddEditForm['employeeName'].errors && isAddEditFormIsSubmitted?'error-indication':''">
           </div>
           <div *ngIf="fAddEditForm['employeeName'].errors && isAddEditFormIsSubmitted">
@@ -184,7 +184,7 @@
           </div>
           <div class="">
             <label for="Sheet Name" class="form-label">Salary</label>
-            <input type="email" formControlName="employeeSalary" class="form-control form-control-sm"
+            <input type="text" appOnlynumber formControlName="employeeSalary" class="form-control form-control-sm"
               [ngClass]="fAddEditForm['employeeSalary'].errors && isAddEditFormIsSubmitted?'error-indication':''">
           </div>
           <div *ngIf="fAddEditForm['employeeSalary'].errors && isAddEditFormIsSubmitted">
@@ -193,7 +193,7 @@
           </div>
           <div class="">
             <label for="File Name" class="form-label">Joining Date</label>
-            <input type="email" formControlName="employeeJoininDate" class="form-control form-control-sm"
+            <input type="date" formControlName="employeeJoininDate"  class="form-control form-control-sm"
               [ngClass]="fAddEditForm['employeeJoininDate'].errors && isAddEditFormIsSubmitted?'error-indication':''">
           </div>
           <div *ngIf="fAddEditForm['employeeJoininDate'].errors && isAddEditFormIsSubmitted">
@@ -202,7 +202,7 @@
           </div>
           <div class="">
             <label for="File Name" class="form-label">Role</label>
-            <input type="email" formControlName="employeeRole" class="form-control form-control-sm"
+            <input type="text" appOnlychar formControlName="employeeRole" class="form-control form-control-sm"
               [ngClass]="fAddEditForm['employeeRole'].errors && isAddEditFormIsSubmitted?'error-indication':''">
           </div>
           <div *ngIf="fAddEditForm['employeeRole'].errors && isAddEditFormIsSubmitted">
@@ -211,21 +211,26 @@
           </div>
           <div class="">
             <label for="File Name" class="form-label">Email</label>
-            <input type="email" formControlName="employeeEmail" class="form-control form-control-sm"
+            <input type="text" formControlName="employeeEmail" class="form-control form-control-sm"
               [ngClass]="fAddEditForm['employeeEmail'].errors && isAddEditFormIsSubmitted?'error-indication':''">
           </div>
           <div *ngIf="fAddEditForm['employeeEmail'].errors && isAddEditFormIsSubmitted">
             <label *ngIf="fAddEditForm['employeeEmail'].errors['required']" class="error-message">* Employee Email Is
               Required.</label>
+            <label *ngIf="fAddEditForm['employeeEmail'].errors['pattern']" class="error-message">* Invalid Email
+              Address.</label>
           </div>
           <div class="">
             <label for="File Name" class="form-label">Mobile</label>
-            <input type="email" formControlName="employeePhone" class="form-control form-control-sm"
+            <input type="text" appOnlynumber [maxlength]="10" formControlName="employeePhone"
+              class="form-control form-control-sm"
               [ngClass]="fAddEditForm['employeePhone'].errors && isAddEditFormIsSubmitted?'error-indication':''">
           </div>
           <div *ngIf="fAddEditForm['employeePhone'].errors && isAddEditFormIsSubmitted">
             <label *ngIf="fAddEditForm['employeePhone'].errors['required']" class="error-message">* Employee Mobile
               Number Is Required.</label>
+            <label *ngIf="fAddEditForm['employeePhone'].errors['pattern']" class="error-message">* Invalid Mobile
+              Number.</label>
           </div>
         </div>
         <div class="modal-footer d-flex justifiy-content-center align-items-center">
