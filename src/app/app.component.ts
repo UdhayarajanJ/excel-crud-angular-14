@@ -68,6 +68,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.initiallyPageLoad();
     this.logger.logInformation('CheckLogger', 'Angular 14 Excel Crud');
     this.defaultLoadForm();
     //this.toaster.success('Success','Message');
@@ -301,5 +302,12 @@ export class AppComponent implements OnInit {
         this.logger.logError('paginateError', err);
       }
     });
+  }
+
+  initiallyPageLoad() {
+    this.spinner.show();
+    setTimeout(() => {
+      this.spinner.hide();
+    }, 3000);
   }
 }
