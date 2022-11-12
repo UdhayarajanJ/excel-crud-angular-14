@@ -8,8 +8,7 @@ import { LoggerService } from './logger.service';
 @Injectable({
   providedIn: 'root'
 })
-export class ExcelService
-{
+export class ExcelService {
 
   private IEmployeeDetails!: Icompany[];
   private IEmployeeDetailsObj!: Icompany;
@@ -19,8 +18,7 @@ export class ExcelService
 
   //Save Empty Content Excel
 
-  public createNewExcelFile(data: any)
-  {
+  public createNewExcelFile(data: any) {
 
     let workbook = new Workbook();
 
@@ -37,16 +35,14 @@ export class ExcelService
     let fileName = data.fileName;
 
     //to Save The File
-    workbook.xlsx.writeBuffer().then((data) =>
-    {
+    workbook.xlsx.writeBuffer().then((data) => {
       let blob = new Blob([data], { type: 'application/octet-stream' });
       fs.saveAs(blob, fileName + '.xlsx');
     });
   }
 
   //to define Title
-  private toDefineTitle(worksheet: Worksheet, title: string): Worksheet
-  {
+  private toDefineTitle(worksheet: Worksheet, title: string | undefined): Worksheet {
 
     worksheet.mergeCells('A2:F3');
     worksheet.getCell('A2').value = title;
@@ -74,14 +70,12 @@ export class ExcelService
   }
 
   //to define FileName
-  private toDefineHeaders(worksheet: Worksheet): Worksheet
-  {
+  private toDefineHeaders(worksheet: Worksheet): Worksheet {
 
     const headers = ['EmployeeName', 'EmployeeSalary', 'EmployeeJoininDate', 'EmployeeRole', 'EmployeeEmail', 'EmployeePhone'];
     worksheet.insertRow(5, headers);
 
-    worksheet.getRow(5).eachCell((cell, colNumber) =>
-    {
+    worksheet.getRow(5).eachCell((cell, colNumber) => {
       cell.alignment = {
         horizontal: 'center',
         vertical: 'middle'
@@ -100,8 +94,7 @@ export class ExcelService
       };
     });
 
-    worksheet.columns.forEach(function (column, i)
-    {
+    worksheet.columns.forEach(function (column, i) {
       column.width = 30
     });
 
@@ -110,19 +103,16 @@ export class ExcelService
 
 
   //validate Title Name
-  public validateUploadExcelTitle(workbook: Workbook): boolean
-  {
+  public validateUploadExcelTitle(workbook: Workbook): boolean {
     //this.logger.logInformation('TitileValue', workbook.getWorksheet(1).getCell('A2:F3').value);
     let result = workbook.getWorksheet(1).getCell('A2:F3').value ? true : false;
     return result;
   }
 
   //validate Header
-  public validateUploadExcelHeaders(workbook: Workbook): boolean
-  {
+  public validateUploadExcelHeaders(workbook: Workbook): boolean {
     let headers = new Array();
-    workbook.getWorksheet(1).getRow(5).eachCell({ includeEmpty: false }, (cell, cellNumber) =>
-    {
+    workbook.getWorksheet(1).getRow(5).eachCell({ includeEmpty: false }, (cell, cellNumber) => {
       headers.push(cell.value);
     });
     //this.logger.logInformation('HeadersValue', headers);
@@ -133,8 +123,7 @@ export class ExcelService
 
 
   //To Get Sheet Details
-  public toGetSheetDetails(workbook: Workbook, fileInfo: File, rowCount: number): Isheetdetails 
-  {
+  public toGetSheetDetails(workbook: Workbook, fileInfo: File, rowCount: number): Isheetdetails {
     this.IsheetDetails = {
       fileName: fileInfo.name,
       rowCount: rowCount,
@@ -142,5 +131,43 @@ export class ExcelService
       titleOfExcel: workbook.getWorksheet(1).getCell('A2:F3').value?.toString()
     }
     return this.IsheetDetails;
+  }
+
+  //To Save The File
+  saveFile(sheetInfo: Isheetdetails, fileName: string, recordInfo: Icompany[]) {
+
+    let workbook = new Workbook();
+
+    let worksheet = workbook.addWorksheet(sheetInfo.sheetName);
+
+    //to define Title
+    worksheet = this.toDefineTitle(worksheet, sheetInfo.titleOfExcel);
+
+    //to define Title
+    worksheet = this.toDefineHeaders(worksheet);
+
+    //to Insert Record
+    recordInfo.forEach((value, index) => {
+      const rowArray = [value.employeeName, value.employeeSalary, value.employeeJoininDate, value.employeeRole, value.employeeEmail, value.employeePhone];
+      worksheet.insertRow(6 + index, rowArray);
+      worksheet.getRow(6 + index).eachCell((cell, colNumber) => {
+        cell.alignment = {
+          horizontal: 'left',
+          vertical: 'middle'
+        }
+        cell.style.font = {
+          bold: true,
+          color: { argb: '000000' },
+          size: 10
+        };
+      });
+
+    });
+
+    //to Save The File
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], { type: 'application/octet-stream' });
+      fs.saveAs(blob, fileName + '.xlsx');
+    });
   }
 }
