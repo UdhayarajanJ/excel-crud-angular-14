@@ -7,6 +7,8 @@ import { Icompany } from './core/interfaces/icompany';
 import { Isheetdetails } from './core/interfaces/isheetdetails';
 import { ExcelService } from './core/services/excel.service';
 import { LoggerService } from './core/services/logger.service';
+import { from, of } from 'rxjs';
+import { skip, filter, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -47,6 +49,13 @@ export class AppComponent implements OnInit {
   invalidFileName: boolean = false;
   isChangedFileTrue: boolean = false;
   showTableView: boolean = false;
+  arrayCompany: any;
+
+  //Pagination Variable
+  pageNo: number = 1;
+  pageSize: number = 3;
+  offsetValue: number = 0;
+
 
   constructor(
     private spinner: NgxSpinnerService,
@@ -168,6 +177,7 @@ export class AppComponent implements OnInit {
                 employeePhone: rowsValue[5]
               };
               employeeDetails.push(this.IEmployeeDetailsObj);
+
               this.logger.logInformation('rowInformation', this.IEmployeeDetails);
               this.logger.logInformation('sheetInformation', this.IsheetDetails);
             }
@@ -175,6 +185,8 @@ export class AppComponent implements OnInit {
           });
           //Read Excel Row Info
           this.IEmployeeDetails = employeeDetails;
+          this.pageNo = 1;
+          this.paginateArrayOfCompany();
           //Read Sheet Details Info
           this.IsheetDetails = this.excel.toGetSheetDetails(workbook, importFile, this.IEmployeeDetails.length);
           this.showTableView = true;
@@ -206,6 +218,8 @@ export class AppComponent implements OnInit {
     if (!this.isUpdated) {
       this.IEmployeeDetails.push(this.IEmployeeDetailsObj);
       this.IsheetDetails.rowCount = this.IEmployeeDetails.length;
+      this.pageNo = 1;
+      this.paginateArrayOfCompany();
       this.toaster.success('Added New Record', 'Message');
     }
     else {
@@ -251,6 +265,8 @@ export class AppComponent implements OnInit {
     this.IsheetDetails.rowCount = this.IEmployeeDetails.length;
     this.closeDeleteRecordPopup.nativeElement.click();
     this.isChangedFileTrue = true;
+    this.pageNo = 1;
+    this.paginateArrayOfCompany();
     this.toaster.success('Record Deleted...', 'Message');
   }
 
@@ -266,5 +282,24 @@ export class AppComponent implements OnInit {
     fileName.value = '';
     this.isChangedFileTrue = false;
     this.showTableView = false;
+  }
+
+  onPageChangeEvent(event: any) {
+    this.pageNo = event;
+    this.paginateArrayOfCompany();
+  }
+
+  paginateArrayOfCompany() {
+    this.offsetValue = (this.pageNo - 1) * this.pageSize;
+    const icompanyInfo = of(this.IEmployeeDetails);
+    const paginationBase = icompanyInfo.pipe(skip(this.offsetValue), take(this.pageSize));
+    paginationBase.subscribe({
+      next: (data) => {
+        this.arrayCompany = data;
+      },
+      error: (err) => {
+        this.logger.logError('paginateError', err);
+      }
+    });
   }
 }

@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxPaginationModule } from 'ngx-pagination';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { ToastrModule } from 'ngx-toastr';
 import { AppComponent } from './app.component';
@@ -24,6 +25,7 @@ import { SharedModule } from './shared/shared.module';
       progressAnimation: 'increasing'
     }),
     SharedModule,
+    NgxPaginationModule,
   ],
   providers: [LoggerService, ExcelService],
   bootstrap: [AppComponent]

@@ -38,3 +38,24 @@ body {
     font-weight: bold;
     font-size: .7rem;
 }
+
+
+
+.ngx-pagination {
+    padding: 1rem;
+
+    a {
+        text-decoration: none;
+        font-weight: bold;
+        background-color: var($primary-color-dark) !important;
+    }
+
+    .current,
+    a:hover {
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+        border-radius: 1rem;
+        background-color: $primary-color-dark !important;
+    }
+}
